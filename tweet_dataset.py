@@ -2,7 +2,12 @@ import torch
 import numpy as np
 from config import CONFIG
 
+
 class TweetDataset(torch.utils.data.Dataset):
+    """
+    Класс TweetDataset предназначен для создания датасета из твитов.
+    Этот класс наследует от torch.utils.data.Dataset и переопределяет методы __init__, __getitem__ и __len__.
+    """
     def __init__(self, part, dataset, tokenizer):
         self.part = part
         self.dataset = dataset

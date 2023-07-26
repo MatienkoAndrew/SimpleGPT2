@@ -12,17 +12,29 @@ from tweet_dataset import TweetDataset
 from config import CONFIG
 
 def load_data():
+    """
+    Загрузка набора данных "emotion" из библиотеки "datasets".
+    Возвращает загруженный набор данных.
+    """
     dataset = load_dataset("emotion")
     return dataset
 
 
 def load_tokenizer(model_name: str='distilgpt2'):
+    """
+    Загрузка токенизатора для заданной модели.
+    Возвращает загруженный токенизатор.
+    """
     tokenizer = GPT2TokenizerFast.from_pretrained(model_name)
     tokenizer.pad_token = tokenizer.eos_token # У gpt2 нет pad токенов. Вместо них воспользуемся токенами конца текста.
     return tokenizer
 
 
 def prepare_data(dataset, tokenizer) -> tuple:
+    """
+    Подготовка данных для обучения, валидации и тестирования.
+    Возвращает кортеж из трех объектов типа TweetDataset.
+    """
     train_dataset = TweetDataset(part='train', dataset=dataset, tokenizer=tokenizer)
     valid_dataset = TweetDataset('validation', dataset=dataset, tokenizer=tokenizer) # validation
     test_dataset = TweetDataset('test', dataset=dataset, tokenizer=tokenizer)
@@ -30,6 +42,10 @@ def prepare_data(dataset, tokenizer) -> tuple:
 
 
 def prepare_loader(train_dataset, valid_dataset, test_dataset) -> tuple:
+    """
+    Подготовка загрузчиков данных для обучения, валидации и тестирования.
+    Возвращает кортеж из трех объектов типа DataLoader.
+    """
     batch_size = CONFIG['batch_size']
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=batch_size
@@ -43,7 +59,11 @@ def prepare_loader(train_dataset, valid_dataset, test_dataset) -> tuple:
     return (train_loader, valid_loader, test_loader)
 
 
-def get_untrained_model(tokenizer):
+def get_unpretrained_model(tokenizer):
+    """
+    Создание необученной модели с конфигурацией GPT2.
+    Возвращает модель.
+    """
     config = GPT2Config.from_pretrained(
         "distilgpt2",
         output_attentions=True,
@@ -53,7 +73,11 @@ def get_untrained_model(tokenizer):
     model = GPT2ForSequenceClassification(config=config)
     return model
 
-def get_trained_model(tokenizer):
+def get_pretrained_model(tokenizer):
+    """
+    Загрузка предобученной модели с конфигурацией GPT2.
+    Возвращает модель.
+    """
     model = GPT2ForSequenceClassification.from_pretrained(
         "distilgpt2", 
         output_attentions=True,
@@ -64,6 +88,10 @@ def get_trained_model(tokenizer):
 
 
 def inference(model, tokenizer, text: str):
+    """
+    Инференс модели на заданном тексте.
+    Печатает предсказанную эмоцию.
+    """
     map_classes = {0: "sadness", 1: "joy", 2: "love", 3: "anger", 4: "fear", 5: "surprise"}
     encoded_input = tokenizer.encode_plus(
                 text, 
@@ -81,6 +109,10 @@ def inference(model, tokenizer, text: str):
 
 
 def get_attention_matrixes(model, tokenizer, text):
+    """
+    Получение матриц внимания модели для заданного текста.
+    Возвращает массив numpy с матрицами внимания.
+    """
     inp = list(filter(lambda x: x != tokenizer.sep_token_id, tokenizer.encode(text)))
     inp = torch.tensor(inp, dtype=torch.long, device=CONFIG['device']).unsqueeze(0)
     attn_tensors = model(inp)[-1]
@@ -96,6 +128,9 @@ def get_attention_matrixes(model, tokenizer, text):
 
 
 def show_attention(seq, attentions):
+    """
+    Отображение визуализации матриц внимания.
+    """
     # Set up figure with colorbar
     fig = plt.figure(figsize=(20,20))
     ax = fig.add_subplot(111)
