@@ -27,12 +27,13 @@
 pip install -r requirements.txt
 ```
 2. Запустите файл main.py, чтобы начать обучение и генерацию текста:
+
 2.1 Обучение модели:
-   ```
-   python main.py --mode train
-   ```
+```
+python main.py --mode train
+```
 2.2 Инференс модели (выдает предсказанную эмоцию по входному тексту):
-  ```
-  python main.py --mode infer --text 'What a good day'
-  ```
+```
+python main.py --mode infer --text 'What a good day'
+```
 
