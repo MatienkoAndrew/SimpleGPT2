@@ -3,7 +3,7 @@ import argparse
 
 from config import CONFIG
 from tweet_dataset import TweetDataset
-from model_training import training_model, evaluate_valid, evaluate
+from train_and_evaluate import training_model, evaluate_valid, evaluate
 from utils import load_data, load_tokenizer, prepare_data, prepare_loader, get_unpretrained_model
 from utils import get_pretrained_model, get_attention_matrixes, show_attention, inference 
 
